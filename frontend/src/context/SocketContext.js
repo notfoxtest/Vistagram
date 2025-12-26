@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { io } from 'socket.io-client';
 import { useAuth } from './AuthContext';
 
@@ -12,89 +12,97 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     if (token && user) {
       const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-      const socketUrl = BACKEND_URL.replace('/api', '').replace('https://', 'wss://').replace('http://', 'ws://');
       
-      const newSocket = io(BACKEND_URL, {
-        path: '/ws/socket.io',
-        transports: ['websocket', 'polling'],
-        auth: { token }
-      });
+      try {
+        const newSocket = io(BACKEND_URL, {
+          path: '/ws/socket.io',
+          transports: ['polling', 'websocket'],
+          auth: { token },
+          reconnection: true,
+          reconnectionAttempts: 3,
+          reconnectionDelay: 1000,
+          timeout: 5000
+        });
 
-      newSocket.on('connect', () => {
-        console.log('Socket connected');
-        setConnected(true);
-      });
+        newSocket.on('connect', () => {
+          console.log('Socket connected');
+          setConnected(true);
+        });
 
-      newSocket.on('disconnect', () => {
-        console.log('Socket disconnected');
-        setConnected(false);
-      });
+        newSocket.on('disconnect', () => {
+          console.log('Socket disconnected');
+          setConnected(false);
+        });
 
-      newSocket.on('connect_error', (error) => {
-        console.error('Socket connection error:', error);
-      });
+        newSocket.on('connect_error', (error) => {
+          console.warn('Socket connection error (non-critical):', error.message);
+          // Don't fail the app if socket fails - HTTP fallback works
+        });
 
-      setSocket(newSocket);
+        setSocket(newSocket);
 
-      return () => {
-        newSocket.close();
-      };
+        return () => {
+          newSocket.close();
+        };
+      } catch (error) {
+        console.warn('Socket initialization failed (non-critical):', error);
+      }
     }
   }, [token, user]);
 
-  const joinChannel = (channelId) => {
+  const joinChannel = useCallback((channelId) => {
     if (socket && connected) {
       socket.emit('join_channel', { channel_id: channelId });
     }
-  };
+  }, [socket, connected]);
 
-  const leaveChannel = (channelId) => {
+  const leaveChannel = useCallback((channelId) => {
     if (socket && connected) {
       socket.emit('leave_channel', { channel_id: channelId });
     }
-  };
+  }, [socket, connected]);
 
-  const joinDM = (dmId) => {
+  const joinDM = useCallback((dmId) => {
     if (socket && connected) {
       socket.emit('join_dm', { dm_id: dmId });
     }
-  };
+  }, [socket, connected]);
 
-  const startTyping = (channelId) => {
+  const startTyping = useCallback((channelId) => {
     if (socket && connected && user) {
       socket.emit('typing_start', { 
         channel_id: channelId, 
         user: { id: user.id, username: user.username } 
       });
     }
-  };
+  }, [socket, connected, user]);
 
-  const stopTyping = (channelId) => {
+  const stopTyping = useCallback((channelId) => {
     if (socket && connected && user) {
       socket.emit('typing_stop', { 
         channel_id: channelId, 
         user: { id: user.id, username: user.username } 
       });
     }
-  };
+  }, [socket, connected, user]);
 
-  const joinVoice = (channelId) => {
+  const joinVoice = useCallback((channelId) => {
     if (socket && connected && user) {
       socket.emit('voice_join', {
         channel_id: channelId,
         user: { id: user.id, username: user.username, avatar: user.avatar }
       });
     }
-  };
+  }, [socket, connected, user]);
 
-  const leaveVoice = (channelId) => {
+  const leaveVoice = useCallback((channelId) => {
     if (socket && connected && user) {
       socket.emit('voice_leave', {
         channel_id: channelId,
         user: { id: user.id, username: user.username }
       });
     }
-  };
+  }, [socket, connected, user]);
 
   const value = {
     socket,
