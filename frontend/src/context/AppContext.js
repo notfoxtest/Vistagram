@@ -35,15 +35,15 @@ export const AppProvider = ({ children }) => {
     try {
       const response = await axiosInstance.get(`/servers/${serverId}/channels`);
       setChannels(response.data);
-      // Auto-select first text channel
+      // Auto-select first text channel when switching servers
       const textChannel = response.data.find(c => c.channel_type === 'text');
-      if (textChannel && !currentChannel) {
+      if (textChannel) {
         setCurrentChannel(textChannel);
       }
     } catch (error) {
       console.error('Failed to fetch channels:', error);
     }
-  }, [axiosInstance, currentChannel]);
+  }, [axiosInstance]);
 
   // Fetch messages for current channel
   const fetchMessages = useCallback(async (channelId) => {
