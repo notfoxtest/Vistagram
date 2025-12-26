@@ -1,0 +1,196 @@
+{
+  "identity": {
+    "name": "E1",
+    "aesthetic": "Liquid Glass / Dark Mode / Cyberpunk",
+    "principles": [
+      "Fusion over Imitation: Discord UX + Apple Vision Pro Aesthetics",
+      "Emotion First: Immersive, Fluid, Premium",
+      "Content is King: Messages float in space",
+      "Negative Space: Breathable glass panels",
+      "Contrast: Neon accents on deep void backgrounds"
+    ]
+  },
+  "typography": {
+    "headings": {
+      "family": "Outfit, sans-serif",
+      "weights": ["500", "700"],
+      "usage": "Server names, Channel headers, Modal titles"
+    },
+    "body": {
+      "family": "Satoshi, sans-serif",
+      "weights": ["400", "500"],
+      "usage": "Chat messages, Usernames, Settings text"
+    },
+    "code": {
+      "family": "JetBrains Mono, monospace",
+      "weights": ["400"],
+      "usage": "Code blocks, IDs, Technical data"
+    },
+    "cdn_imports": [
+      "https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700&family=JetBrains+Mono:wght@400&display=swap",
+      "https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap"
+    ]
+  },
+  "colors": {
+    "palette": {
+      "background": {
+        "base": "#050505",
+        "layer1": "#0a0a0a",
+        "layer2": "#121212"
+      },
+      "glass": {
+        "panel": "rgba(20, 20, 20, 0.6)",
+        "panel_hover": "rgba(30, 30, 30, 0.7)",
+        "border": "rgba(255, 255, 255, 0.08)",
+        "highlight": "rgba(255, 255, 255, 0.03)"
+      },
+      "primary": {
+        "main": "#6366f1",
+        "neon": "#818cf8",
+        "glow": "0 0 20px rgba(99, 102, 241, 0.5)"
+      },
+      "text": {
+        "primary": "#ffffff",
+        "secondary": "#a1a1aa",
+        "muted": "#52525b"
+      },
+      "status": {
+        "online": "#22c55e",
+        "idle": "#f59e0b",
+        "dnd": "#ef4444",
+        "offline": "#71717a"
+      }
+    },
+    "gradients": {
+      "liquid": "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)",
+      "neon_glow": "radial-gradient(circle at center, rgba(99,102,241,0.15) 0%, transparent 70%)"
+    }
+  },
+  "layout": {
+    "structure": "Holy Grail Layout (Fixed Sidebars, Fluid Main)",
+    "grid_system": "CSS Grid: 72px auto 240px",
+    "spacing": {
+      "base": "0.25rem",
+      "container_padding": "p-6",
+      "element_gap": "gap-4"
+    },
+    "z_index": {
+      "base": 0,
+      "glass_panel": 10,
+      "modal": 50,
+      "tooltip": 60
+    }
+  },
+  "components": {
+    "glass_panel": {
+      "classes": "bg-black/40 backdrop-blur-xl border border-white/10 shadow-xl rounded-2xl",
+      "usage": "Main containers, Modals, Popovers"
+    },
+    "sidebar_server": {
+      "width": "72px",
+      "style": "bg-black/20 backdrop-blur-lg border-r border-white/5 flex flex-col items-center py-4 gap-3"
+    },
+    "sidebar_channel": {
+      "width": "240px",
+      "style": "bg-black/30 backdrop-blur-md border-r border-white/5 flex flex-col"
+    },
+    "chat_area": {
+      "style": "flex-1 bg-transparent flex flex-col relative overflow-hidden"
+    },
+    "member_list": {
+      "width": "240px",
+      "style": "bg-black/20 backdrop-blur-md border-l border-white/5 hidden lg:flex flex-col"
+    },
+    "button": {
+      "primary": "bg-indigo-500 hover:bg-indigo-400 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)] transition-all duration-300",
+      "ghost": "hover:bg-white/10 text-gray-300 hover:text-white transition-colors"
+    },
+    "input": {
+      "style": "bg-black/50 border border-white/10 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 rounded-lg px-4 py-2 text-white placeholder:text-gray-600 transition-all"
+    }
+  },
+  "visual_enhancers": {
+    "glassmorphism": {
+      "backdrop_filter": "blur(24px)",
+      "saturation": "saturate(150%)",
+      "noise_texture": "url('/assets/noise.png') opacity-5"
+    },
+    "shadows": {
+      "neon": "0 0 10px rgba(99, 102, 241, 0.3), 0 0 20px rgba(99, 102, 241, 0.1)",
+      "glass": "0 8px 32px 0 rgba(0, 0, 0, 0.37)"
+    },
+    "borders": {
+      "subtle": "1px solid rgba(255, 255, 255, 0.08)",
+      "highlight": "1px solid rgba(255, 255, 255, 0.15)"
+    }
+  },
+  "motion": {
+    "library": "framer-motion",
+    "transitions": {
+      "hover": { "duration": 0.2, "ease": "easeOut" },
+      "modal": { "type": "spring", "damping": 25, "stiffness": 300 },
+      "message_entrance": { "duration": 0.3, "y": 10, "opacity": 0 }
+    }
+  },
+  "assets": {
+    "images": {
+      "backgrounds": [
+        {
+          "url": "https://images.unsplash.com/photo-1762279801058-409ab2d05bc3?crop=entropy&cs=srgb&fm=jpg&q=85",
+          "alt": "Liquid Pink Dark Abstract",
+          "usage": "Login Page Background, Nitro Page Hero"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1762281429507-a0384348f4b1?crop=entropy&cs=srgb&fm=jpg&q=85",
+          "alt": "Liquid Blue Dark Abstract",
+          "usage": "App Background Overlay (Low Opacity)"
+        }
+      ],
+      "avatars": [
+        {
+          "url": "https://images.pexels.com/photos/7650801/pexels-photo-7650801.jpeg",
+          "alt": "Cyberpunk Avatar 1"
+        },
+        {
+          "url": "https://images.pexels.com/photos/7650839/pexels-photo-7650839.jpeg",
+          "alt": "Cyberpunk Avatar 2"
+        }
+      ],
+      "logos": [
+        {
+          "url": "https://images.unsplash.com/photo-1618176728882-61e7b2e4b656?crop=entropy&cs=srgb&fm=jpg&q=85",
+          "alt": "Tech Logo White"
+        }
+      ]
+    },
+    "icons": "lucide-react"
+  },
+  "instructions_to_main_agent": [
+    "1. SETUP: Install 'framer-motion' and 'clsx' 'tailwind-merge' immediately.",
+    "2. GLOBAL CSS: Update index.css to include the 'Outfit' and 'Satoshi' fonts. Set body background to #050505.",
+    "3. LAYOUT: Create a 'MainLayout' component that implements the 3-column glass grid. Do NOT use a simple flex row; use CSS Grid for stability.",
+    "4. COMPONENTS: When using Shadcn components (Dialog, Popover, Card), override their default white/black backgrounds with 'bg-black/40 backdrop-blur-xl border-white/10'.",
+    "5. CHAT: The chat area must feel like it's floating. Use a subtle gradient mask at the top so messages fade out as they scroll up.",
+    "6. NITRO: Create a 'Nitro' page that uses the 'Liquid Pink' background image with a parallax effect.",
+    "7. CRITICAL: Ensure all text has sufficient contrast against the glass backgrounds. Use 'text-white' for primary and 'text-zinc-400' for secondary.",
+    "8. TESTING: Add data-testid to all interactive elements (buttons, inputs, channel items)."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Avoid generic AI slop aesthetics.",
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur).",
+    "You MUST NOT apply universal transition. Eg: transition: all.",
+    "You MUST NOT center align the app container.",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations.",
+    "NEVER use AI assistant Emoji characters for icons.",
+    "Every interaction needs micro-animations.",
+    "Use 2-3x more spacing than feels comfortable.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations.",
+    "Main agent relies on these image URLs. Missing categories = main agent will use placeholder text which is FORBIDDEN.",
+    "Prioritize using pre-existing components from src/components/ui when applicable.",
+    "Components MUST use named exports.",
+    "Pages MUST use default exports.",
+    "Use sonner for toasts."
+  ]
+}
