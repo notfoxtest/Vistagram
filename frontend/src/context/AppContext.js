@@ -138,6 +138,12 @@ export const AppProvider = ({ children }) => {
         channel_id: channelId,
         attachments
       });
+      // Add message immediately to state (in case socket doesn't deliver it)
+      setMessages(prev => {
+        // Avoid duplicates if socket already added it
+        if (prev.some(m => m.id === response.data.id)) return prev;
+        return [...prev, response.data];
+      });
       return response.data;
     } catch (error) {
       console.error('Failed to send message:', error);
@@ -147,7 +153,11 @@ export const AppProvider = ({ children }) => {
 
   // Add message to state (for real-time updates)
   const addMessage = (message) => {
-    setMessages(prev => [...prev, message]);
+    setMessages(prev => {
+      // Avoid duplicates
+      if (prev.some(m => m.id === message.id)) return prev;
+      return [...prev, message];
+    });
   };
 
   // Send DM message
@@ -158,6 +168,11 @@ export const AppProvider = ({ children }) => {
         dm_id: dmId,
         attachments
       });
+      // Add message immediately to state
+      setDmMessages(prev => {
+        if (prev.some(m => m.id === response.data.id)) return prev;
+        return [...prev, response.data];
+      });
       return response.data;
     } catch (error) {
       console.error('Failed to send DM:', error);
@@ -167,7 +182,10 @@ export const AppProvider = ({ children }) => {
 
   // Add DM message to state
   const addDMMessage = (message) => {
-    setDmMessages(prev => [...prev, message]);
+    setDmMessages(prev => {
+      if (prev.some(m => m.id === message.id)) return prev;
+      return [...prev, message];
+    });
   };
 
   // Create DM
