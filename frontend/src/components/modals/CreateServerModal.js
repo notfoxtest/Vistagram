@@ -26,9 +26,9 @@ export const CreateServerModal = ({ open, onClose }) => {
     try {
       const server = await createServer(serverName.trim(), null, serverDescription.trim());
       setCurrentServer(server);
-      toast.success('Server created successfully!');
-      onClose();
       resetForm();
+      onClose();
+      toast.success('Server created successfully!');
     } catch (error) {
       toast.error('Failed to create server');
     } finally {
@@ -45,9 +45,9 @@ export const CreateServerModal = ({ open, onClose }) => {
     setLoading(true);
     try {
       await joinServer(inviteCode.trim());
-      toast.success('Joined server successfully!');
-      onClose();
       resetForm();
+      onClose();
+      toast.success('Joined server successfully!');
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Failed to join server');
     } finally {
