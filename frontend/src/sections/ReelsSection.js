@@ -1,12 +1,28 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../App';
-import { Heart, MessageCircle, Share2, Music, Play, Pause, Plus, Upload, X, Loader2 } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Textarea } from '../components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
-import { toast } from 'sonner';
+import { useState, useEffect, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "../App";
+import {
+  Heart,
+  MessageCircle,
+  Share2,
+  Music,
+  Play,
+  Pause,
+  Plus,
+  Upload,
+  X,
+  Loader2,
+} from "lucide-react";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Textarea } from "../components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../components/ui/dialog";
+import { toast } from "sonner";
 
 export default function ReelsSection() {
   const { user, axiosInstance } = useAuth();
@@ -17,15 +33,15 @@ export default function ReelsSection() {
   const [showComments, setShowComments] = useState(false);
   const [selectedReel, setSelectedReel] = useState(null);
   const [comments, setComments] = useState([]);
-  const [commentInput, setCommentInput] = useState('');
+  const [commentInput, setCommentInput] = useState("");
   const containerRef = useRef(null);
 
   const fetchReels = useCallback(async () => {
     try {
-      const response = await axiosInstance.get('/reels');
+      const response = await axiosInstance.get("/reels");
       setReels(response.data);
     } catch (error) {
-      console.error('Failed to fetch reels:', error);
+      console.error("Failed to fetch reels:", error);
     } finally {
       setLoading(false);
     }
@@ -38,18 +54,22 @@ export default function ReelsSection() {
   const handleLike = async (reelId) => {
     try {
       const response = await axiosInstance.post(`/reels/${reelId}/like`);
-      setReels(prev => prev.map(r => {
-        if (r.id === reelId) {
-          return {
-            ...r,
-            is_liked: response.data.liked,
-            likes_count: response.data.liked ? r.likes_count + 1 : r.likes_count - 1
-          };
-        }
-        return r;
-      }));
+      setReels((prev) =>
+        prev.map((r) => {
+          if (r.id === reelId) {
+            return {
+              ...r,
+              is_liked: response.data.liked,
+              likes_count: response.data.liked
+                ? r.likes_count + 1
+                : r.likes_count - 1,
+            };
+          }
+          return r;
+        })
+      );
     } catch (error) {
-      toast.error('Failed to like reel');
+      toast.error("Failed to like reel");
     }
   };
 
@@ -60,7 +80,7 @@ export default function ReelsSection() {
       const response = await axiosInstance.get(`/reels/${reel.id}/comments`);
       setComments(response.data);
     } catch (error) {
-      console.error('Failed to fetch comments:', error);
+      console.error("Failed to fetch comments:", error);
     }
   };
 
@@ -69,21 +89,26 @@ export default function ReelsSection() {
     if (!commentInput.trim() || !selectedReel) return;
 
     try {
-      const response = await axiosInstance.post(`/reels/${selectedReel.id}/comments`, {
-        content: commentInput.trim(),
-        reel_id: selectedReel.id
-      });
-      setComments(prev => [response.data, ...prev]);
-      setCommentInput('');
-      setReels(prev => prev.map(r => {
-        if (r.id === selectedReel.id) {
-          return { ...r, comments_count: r.comments_count + 1 };
+      const response = await axiosInstance.post(
+        `/reels/${selectedReel.id}/comments`,
+        {
+          content: commentInput.trim(),
+          reel_id: selectedReel.id,
         }
-        return r;
-      }));
-      toast.success('Comment added!');
+      );
+      setComments((prev) => [response.data, ...prev]);
+      setCommentInput("");
+      setReels((prev) =>
+        prev.map((r) => {
+          if (r.id === selectedReel.id) {
+            return { ...r, comments_count: r.comments_count + 1 };
+          }
+          return r;
+        })
+      );
+      toast.success("Comment added!");
     } catch (error) {
-      toast.error('Failed to add comment');
+      toast.error("Failed to add comment");
     }
   };
 
@@ -108,26 +133,30 @@ export default function ReelsSection() {
   return (
     <div className="h-full flex" data-testid="reels-section">
       {/* Reels Feed */}
-      <div 
+      <div
         ref={containerRef}
         onScroll={handleScroll}
         className="flex-1 overflow-y-auto snap-y snap-mandatory scrollbar-hide"
-        style={{ scrollSnapType: 'y mandatory' }}
+        style={{ scrollSnapType: "y mandatory" }}
       >
         {reels.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center p-4">
             <div className="w-24 h-24 rounded-full bg-[var(--bg-layer2)] flex items-center justify-center mb-4">
               <Play className="w-12 h-12 text-[var(--text-muted)]" />
             </div>
-            <h2 className="text-xl font-outfit font-semibold text-[var(--text-primary)] mb-2">No Reels Yet</h2>
-            <p className="text-[var(--text-muted)] mb-4 text-center">Be the first to upload a reel!</p>
+            <h2 className="text-xl font-outfit font-semibold text-[var(--text-primary)] mb-2">
+              No Reels Yet
+            </h2>
+            <p className="text-[var(--text-muted)] mb-4 text-center">
+              Be the first to upload a reel!
+            </p>
             <Button onClick={() => setShowUpload(true)} className="btn-roblox">
               <Plus className="w-5 h-5 mr-2" /> Upload Reel
             </Button>
           </div>
         ) : (
           reels.map((reel, index) => (
-            <div 
+            <div
               key={reel.id}
               className="h-full w-full snap-start snap-always flex items-center justify-center relative"
             >
@@ -159,22 +188,33 @@ export default function ReelsSection() {
                   {/* Author */}
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white">
-                      <img 
-                        src={reel.author?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${reel.author?.username}`} 
-                        alt="" 
-                        className="w-full h-full object-cover" 
+                      <img
+                        src={
+                          reel.author?.avatar ||
+                          `https://api.dicebear.com/7.x/avataaars/svg?seed=${reel.author?.username}`
+                        }
+                        alt=""
+                        className="w-full h-full object-cover"
                       />
                     </div>
                     <div>
-                      <p className="font-semibold text-white">{reel.author?.username}</p>
-                      <p className="text-white/60 text-sm">{formatTimestamp(reel.created_at)}</p>
+                      <p className="font-semibold text-white">
+                        {reel.author?.username}
+                      </p>
+                      <p className="text-white/60 text-sm">
+                        {formatTimestamp(reel.created_at)}
+                      </p>
                     </div>
                   </div>
 
                   {/* Title & Description */}
-                  <h3 className="font-semibold text-white mb-1">{reel.title}</h3>
+                  <h3 className="font-semibold text-white mb-1">
+                    {reel.title}
+                  </h3>
                   {reel.description && (
-                    <p className="text-white/80 text-sm line-clamp-2">{reel.description}</p>
+                    <p className="text-white/80 text-sm line-clamp-2">
+                      {reel.description}
+                    </p>
                   )}
 
                   {/* Music Tag */}
@@ -191,10 +231,22 @@ export default function ReelsSection() {
                     onClick={() => handleLike(reel.id)}
                     className="flex flex-col items-center"
                   >
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center ${reel.is_liked ? 'bg-red-500' : 'bg-white/20 backdrop-blur'}`}>
-                      <Heart className={`w-6 h-6 ${reel.is_liked ? 'text-white fill-white' : 'text-white'}`} />
+                    <div
+                      className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                        reel.is_liked
+                          ? "bg-red-500"
+                          : "bg-white/20 backdrop-blur"
+                      }`}
+                    >
+                      <Heart
+                        className={`w-6 h-6 ${
+                          reel.is_liked ? "text-white fill-white" : "text-white"
+                        }`}
+                      />
                     </div>
-                    <span className="text-white text-sm mt-1">{reel.likes_count}</span>
+                    <span className="text-white text-sm mt-1">
+                      {reel.likes_count}
+                    </span>
                   </motion.button>
 
                   <motion.button
@@ -205,7 +257,9 @@ export default function ReelsSection() {
                     <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur flex items-center justify-center">
                       <MessageCircle className="w-6 h-6 text-white" />
                     </div>
-                    <span className="text-white text-sm mt-1">{reel.comments_count}</span>
+                    <span className="text-white text-sm mt-1">
+                      {reel.comments_count}
+                    </span>
                   </motion.button>
 
                   <motion.button
@@ -239,9 +293,17 @@ export default function ReelsSection() {
       <Dialog open={showUpload} onOpenChange={setShowUpload}>
         <DialogContent className="glass-panel border-[var(--glass-border)] max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-[var(--text-primary)] font-outfit text-xl">Upload Reel</DialogTitle>
+            <DialogTitle className="text-[var(--text-primary)] font-outfit text-xl">
+              Upload Reel
+            </DialogTitle>
           </DialogHeader>
-          <UploadReelForm axiosInstance={axiosInstance} onSuccess={(reel) => { setReels(prev => [reel, ...prev]); setShowUpload(false); }} />
+          <UploadReelForm
+            axiosInstance={axiosInstance}
+            onSuccess={(reel) => {
+              setReels((prev) => [reel, ...prev]);
+              setShowUpload(false);
+            }}
+          />
         </DialogContent>
       </Dialog>
 
@@ -249,36 +311,55 @@ export default function ReelsSection() {
       <Dialog open={showComments} onOpenChange={setShowComments}>
         <DialogContent className="glass-panel border-[var(--glass-border)] max-w-md max-h-[80vh] flex flex-col">
           <DialogHeader>
-            <DialogTitle className="text-[var(--text-primary)] font-outfit text-xl">Comments</DialogTitle>
+            <DialogTitle className="text-[var(--text-primary)] font-outfit text-xl">
+              Comments
+            </DialogTitle>
           </DialogHeader>
           <div className="flex-1 overflow-y-auto py-4 space-y-4">
             {comments.length === 0 ? (
-              <p className="text-center text-[var(--text-muted)] py-8">No comments yet</p>
+              <p className="text-center text-[var(--text-muted)] py-8">
+                No comments yet
+              </p>
             ) : (
               comments.map((comment) => (
                 <div key={comment.id} className="flex gap-3">
                   <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-                    <img src={comment.author?.avatar} alt="" className="w-full h-full object-cover" />
+                    <img
+                      src={comment.author?.avatar}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-baseline gap-2">
-                      <span className="font-medium text-[var(--text-primary)] text-sm">{comment.author?.username}</span>
-                      <span className="text-xs text-[var(--text-muted)]">{formatTimestamp(comment.created_at)}</span>
+                      <span className="font-medium text-[var(--text-primary)] text-sm">
+                        {comment.author?.username}
+                      </span>
+                      <span className="text-xs text-[var(--text-muted)]">
+                        {formatTimestamp(comment.created_at)}
+                      </span>
                     </div>
-                    <p className="text-[var(--text-secondary)] text-sm mt-1">{comment.content}</p>
+                    <p className="text-[var(--text-secondary)] text-sm mt-1">
+                      {comment.content}
+                    </p>
                   </div>
                 </div>
               ))
             )}
           </div>
-          <form onSubmit={handleComment} className="flex gap-2 pt-4 border-t border-[var(--glass-border)]">
+          <form
+            onSubmit={handleComment}
+            className="flex gap-2 pt-4 border-t border-[var(--glass-border)]"
+          >
             <Input
               value={commentInput}
               onChange={(e) => setCommentInput(e.target.value)}
               placeholder="Add a comment..."
               className="flex-1 bg-[var(--input-bg)] border-[var(--glass-border)] text-[var(--text-primary)]"
             />
-            <Button type="submit" className="btn-roblox px-4">Post</Button>
+            <Button type="submit" className="btn-roblox px-4">
+              Post
+            </Button>
           </form>
         </DialogContent>
       </Dialog>
@@ -287,8 +368,8 @@ export default function ReelsSection() {
 }
 
 function UploadReelForm({ axiosInstance, onSuccess }) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [videoFile, setVideoFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [videoPreview, setVideoPreview] = useState(null);
@@ -304,33 +385,34 @@ function UploadReelForm({ axiosInstance, onSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim()) {
-      toast.error('Please enter a title');
+      toast.error("Please enter a title");
       return;
     }
 
     setUploading(true);
     try {
-      let videoUrl = '';
-      
+      let videoUrl = "";
+
       if (videoFile) {
         const formData = new FormData();
-        formData.append('file', videoFile);
-        const uploadResponse = await axiosInstance.post('/upload/videos', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        formData.append("file", videoFile);
+        const uploadResponse = await axiosInstance.post(
+          "/upload/videos",
+          formData
+        );
         videoUrl = uploadResponse.data.url;
       }
 
-      const response = await axiosInstance.post('/reels', {
+      const response = await axiosInstance.post("/reels", {
         title: title.trim(),
         description: description.trim(),
-        video_url: videoUrl
+        video_url: videoUrl,
       });
 
-      toast.success('Reel uploaded!');
+      toast.success("Reel uploaded!");
       onSuccess(response.data);
     } catch (error) {
-      toast.error('Failed to upload reel');
+      toast.error("Failed to upload reel");
     } finally {
       setUploading(false);
     }
@@ -345,7 +427,10 @@ function UploadReelForm({ axiosInstance, onSuccess }) {
             <video src={videoPreview} className="w-full h-full object-cover" />
             <button
               type="button"
-              onClick={() => { setVideoFile(null); setVideoPreview(null); }}
+              onClick={() => {
+                setVideoFile(null);
+                setVideoPreview(null);
+              }}
               className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/50 flex items-center justify-center"
             >
               <X className="w-4 h-4 text-white" />
@@ -355,9 +440,16 @@ function UploadReelForm({ axiosInstance, onSuccess }) {
           <label className="block aspect-video max-h-40 bg-[var(--bg-layer2)] rounded-xl border-2 border-dashed border-[var(--glass-border)] cursor-pointer hover:border-[var(--accent-primary)] transition-colors">
             <div className="h-full flex flex-col items-center justify-center">
               <Upload className="w-10 h-10 text-[var(--text-muted)] mb-2" />
-              <p className="text-[var(--text-muted)] text-sm">Click to upload video</p>
+              <p className="text-[var(--text-muted)] text-sm">
+                Click to upload video
+              </p>
             </div>
-            <input type="file" accept="video/*" className="hidden" onChange={handleFileChange} />
+            <input
+              type="file"
+              accept="video/*"
+              className="hidden"
+              onChange={handleFileChange}
+            />
           </label>
         )}
       </div>
@@ -377,8 +469,17 @@ function UploadReelForm({ axiosInstance, onSuccess }) {
         className="bg-[var(--input-bg)] border-[var(--glass-border)] text-[var(--text-primary)] min-h-[80px]"
       />
 
-      <Button type="submit" disabled={uploading} className="w-full btn-roblox" data-testid="upload-reel-submit">
-        {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Upload Reel'}
+      <Button
+        type="submit"
+        disabled={uploading}
+        className="w-full btn-roblox"
+        data-testid="upload-reel-submit"
+      >
+        {uploading ? (
+          <Loader2 className="w-5 h-5 animate-spin" />
+        ) : (
+          "Upload Reel"
+        )}
       </Button>
     </form>
   );
@@ -388,7 +489,7 @@ function formatTimestamp(timestamp) {
   const date = new Date(timestamp);
   const now = new Date();
   const diff = now - date;
-  if (diff < 60000) return 'Just now';
+  if (diff < 60000) return "Just now";
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m`;
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`;
   return `${Math.floor(diff / 86400000)}d`;
