@@ -16,6 +16,9 @@ import jwt
 import bcrypt
 import aiofiles
 import shutil
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -43,13 +46,13 @@ security = HTTPBearer()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# File upload directory
-UPLOAD_DIR = ROOT_DIR / 'uploads'
-UPLOAD_DIR.mkdir(exist_ok=True)
-(UPLOAD_DIR / 'avatars').mkdir(exist_ok=True)
-(UPLOAD_DIR / 'videos').mkdir(exist_ok=True)
-(UPLOAD_DIR / 'images').mkdir(exist_ok=True)
-(UPLOAD_DIR / 'files').mkdir(exist_ok=True)
+# Configure Cloudinary
+cloudinary.config( 
+  cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'), 
+  api_key = os.environ.get('CLOUDINARY_API_KEY'), 
+  api_secret = os.environ.get('CLOUDINARY_API_SECRET'),
+  secure = True
+)
 
 # ================== MODELS ==================
 
@@ -780,23 +783,37 @@ async def upload_file(upload_type: str, file: UploadFile = File(...), current_us
     if upload_type not in ['avatars', 'videos', 'images', 'files']:
         raise HTTPException(status_code=400, detail='Invalid upload type')
     
-    file_id = str(uuid.uuid4())
-    file_ext = Path(file.filename).suffix if file.filename else ''
-    file_path = UPLOAD_DIR / upload_type / f"{file_id}{file_ext}"
-    
-    async with aiofiles.open(file_path, 'wb') as f:
+    # Upload to Cloudinary
+    try:
+        # Determine resource type
+        resource_type = "auto"
+        if upload_type == "images" or upload_type == "avatars":
+            resource_type = "image"
+        elif upload_type == "videos":
+            resource_type = "video"
+            
+        # Read file content
         content = await file.read()
-        await f.write(content)
-    
-    file_url = f"/api/files/{upload_type}/{file_id}{file_ext}"
-    return {'url': file_url, 'filename': file.filename}
+        
+        # Upload
+        result = cloudinary.uploader.upload(
+            content, 
+            folder=f"notfox/{upload_type}", 
+            resource_type=resource_type
+        )
+        
+        file_url = result.get("secure_url")
+        return {'url': file_url, 'filename': file.filename}
+        
+    except Exception as e:
+        logger.error(f"Upload failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
 
 @api_router.get("/files/{upload_type}/{filename}")
 async def get_file(upload_type: str, filename: str):
-    file_path = UPLOAD_DIR / upload_type / filename
-    if not file_path.exists():
-        raise HTTPException(status_code=404, detail='File not found')
-    return FileResponse(file_path)
+    # Deprecated: Files are now served directly from Cloudinary
+    # This endpoint remains for backward compatibility if needed, but won't work on Vercel for new uploads
+    pass
 
 # ================== SEARCH ==================
 
