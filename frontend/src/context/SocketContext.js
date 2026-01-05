@@ -17,7 +17,10 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (token && user) {
-      const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+      let BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+      if (BACKEND_URL && !BACKEND_URL.startsWith("http")) {
+        BACKEND_URL = `https://${BACKEND_URL}`;
+      }
 
       try {
         const newSocket = io(BACKEND_URL, {

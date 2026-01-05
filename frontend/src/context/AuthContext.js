@@ -1,18 +1,30 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import axios from "axios";
 
 const AuthContext = createContext(null);
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const getBackendUrl = () => {
+  const url = process.env.REACT_APP_BACKEND_URL;
+  if (!url) return "";
+  return url.startsWith("http") ? url : `https://${url}`;
+};
+
+const API = `${getBackendUrl()}/api`;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
 
   const axiosInstance = axios.create({
     baseURL: API,
-    headers: token ? { Authorization: `Bearer ${token}` } : {}
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
 
   useEffect(() => {
@@ -27,10 +39,10 @@ export const AuthProvider = ({ children }) => {
       return;
     }
     try {
-      const response = await axiosInstance.get('/auth/me');
+      const response = await axiosInstance.get("/auth/me");
       setUser(response.data);
     } catch (error) {
-      console.error('Failed to fetch user:', error);
+      console.error("Failed to fetch user:", error);
       logout();
     } finally {
       setLoading(false);
@@ -42,31 +54,38 @@ export const AuthProvider = ({ children }) => {
   }, [fetchUser]);
 
   const login = async (email, password) => {
-    const response = await axiosInstance.post('/auth/login', { email, password });
+    const response = await axiosInstance.post("/auth/login", {
+      email,
+      password,
+    });
     const { token: newToken, user: userData } = response.data;
-    localStorage.setItem('token', newToken);
+    localStorage.setItem("token", newToken);
     setToken(newToken);
     setUser(userData);
     return userData;
   };
 
   const signup = async (username, email, password) => {
-    const response = await axiosInstance.post('/auth/signup', { username, email, password });
+    const response = await axiosInstance.post("/auth/signup", {
+      username,
+      email,
+      password,
+    });
     const { token: newToken, user: userData } = response.data;
-    localStorage.setItem('token', newToken);
+    localStorage.setItem("token", newToken);
     setToken(newToken);
     setUser(userData);
     return userData;
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     setToken(null);
     setUser(null);
   };
 
   const updateProfile = async (updates) => {
-    const response = await axiosInstance.put('/auth/profile', updates);
+    const response = await axiosInstance.put("/auth/profile", updates);
     setUser(response.data);
     return response.data;
   };
@@ -80,7 +99,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     updateProfile,
     isAuthenticated: !!user,
-    axiosInstance
+    axiosInstance,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -89,7 +108,7 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 };

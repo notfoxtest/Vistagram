@@ -14,7 +14,13 @@ import Signup from "./pages/Signup";
 import MainApp from "./pages/MainApp";
 import "./App.css";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const getBackendUrl = () => {
+  const url = process.env.REACT_APP_BACKEND_URL;
+  if (!url) return "";
+  return url.startsWith("http") ? url : `https://${url}`;
+};
+
+const API = `${getBackendUrl()}/api`;
 
 // Auth Context
 const AuthContext = createContext(null);
