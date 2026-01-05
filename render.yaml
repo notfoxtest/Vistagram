@@ -1,0 +1,40 @@
+services:
+  # BACKEND SERVICE
+  - type: web
+    name: vistagram-backend
+    env: python
+    region: singapore # Optional: Pick a region close to you
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MONGO_URL
+        sync: false
+      - key: DB_NAME
+        value: vistagram
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: CORS_ORIGINS
+        value: "*" # Allow all temporarily, or set to your frontend URL later
+
+  # FRONTEND STATIC SITE
+  - type: web
+    name: vistagram-frontend
+    env: node
+    plan: free
+    rootDir: frontend
+    buildCommand: yarn install && yarn build
+    startCommand: serve -s build -l $PORT
+    envVars:
+      - key: REACT_APP_BACKEND_URL
+        fromService:
+          type: web
+          name: vistagram-backend
+          property: url
