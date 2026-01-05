@@ -22,7 +22,10 @@ import cloudinary.api
 import certifi
 
 ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
+env_path = ROOT_DIR / '.env'
+if not env_path.exists():
+    env_path = ROOT_DIR.parent / '.env'
+load_dotenv(env_path)
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']

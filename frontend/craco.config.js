@@ -12,14 +12,13 @@ const config = {
   enableVisualEdits: isDevServer, // Only enable during dev server
 };
 
-// Conditionally load visual edits modules only in dev mode
+// Visual edits module removed
 let setupDevServer;
 let babelMetadataPlugin;
-
-if (config.enableVisualEdits) {
-  setupDevServer = require("./plugins/visual-edits/dev-server-setup");
-  babelMetadataPlugin = require("./plugins/visual-edits/babel-metadata-plugin");
-}
+// if (config.enableVisualEdits) {
+//   setupDevServer = require("./plugins/visual-edits/dev-server-setup");
+//   babelMetadataPlugin = require("./plugins/visual-edits/babel-metadata-plugin");
+// }
 
 // Conditionally load health check modules only if enabled
 let WebpackHealthPlugin;
@@ -44,20 +43,19 @@ const webpackConfig = {
   },
   webpack: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
+      "@": path.resolve(__dirname, "src"),
     },
     configure: (webpackConfig) => {
-
       // Add ignored patterns to reduce watched directories
-        webpackConfig.watchOptions = {
-          ...webpackConfig.watchOptions,
-          ignored: [
-            '**/node_modules/**',
-            '**/.git/**',
-            '**/build/**',
-            '**/dist/**',
-            '**/coverage/**',
-            '**/public/**',
+      webpackConfig.watchOptions = {
+        ...webpackConfig.watchOptions,
+        ignored: [
+          "**/node_modules/**",
+          "**/.git/**",
+          "**/build/**",
+          "**/dist/**",
+          "**/coverage/**",
+          "**/public/**",
         ],
       };
 
@@ -84,7 +82,11 @@ webpackConfig.devServer = (devServerConfig) => {
   }
 
   // Add health check endpoints if enabled
-  if (config.enableHealthCheck && setupHealthEndpoints && healthPluginInstance) {
+  if (
+    config.enableHealthCheck &&
+    setupHealthEndpoints &&
+    healthPluginInstance
+  ) {
     const originalSetupMiddlewares = devServerConfig.setupMiddlewares;
 
     devServerConfig.setupMiddlewares = (middlewares, devServer) => {
