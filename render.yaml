@@ -31,7 +31,7 @@ services:
     plan: free
     rootDir: frontend
     buildCommand: yarn install && yarn build
-    startCommand: serve -s build -l $PORT
+    startCommand: npx serve -s build -l $PORT
     envVars:
       - key: REACT_APP_BACKEND_URL
         fromService:
